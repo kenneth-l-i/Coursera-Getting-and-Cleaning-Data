@@ -1,18 +1,12 @@
-
-
-
-
 library(dplyr)
 
-## main function to tidy the data for Human_Activity_Recognition
+## run_analysis: function to tidy the data for Human_Activity_Recognition
 ## input:   folder: folder name for the tidy process, default is 
 ##          "./Human_Activity_Recognition"
 ##          fileUrl: URL for data to be processed.
-## output:  2 data frames in global environment, mergedData for merged data, 
-##          mergedDataAvg for the average of each variable for each activity 
-##          and each subject.
+## output:  data frames for merged data, 
 
-tidy <- function(
+run_analysis <- function(
   folder = "./Human_Activity_Recognition",
   fileUrl = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"){ 
   
@@ -64,27 +58,23 @@ tidy <- function(
   y_merged <- y_merged %>% mutate(activity = act[V1]) %>% select(activity)
   
   ## column combine the subject, activity and measurement data ( left to right )
-  mergedData <<- cbind(subject_merged,y_merged, X_merged)
+  mergedData <- cbind(subject_merged,y_merged, X_merged)
   
   ## task 2:  Extracts only the measurements on the mean and standard
   ##          deviation for each measurement. 
   ## use the regexp to extract mean, std variables and also subject and activity.
-  mergedData <<- mergedData[, 
+  mergedData <- mergedData[, 
                             regexpr("^subject$|^activity$|mean[(][)]|std[(][)]",
                                     names(mergedData)
                                     ) > 0]
 
-  ## task5: From the data set in step 4, creates a second, independent tidy data
-  ##  set with the average of each variable for each activity and each subject.
   
-  mergedDataAvg <<- mergedData %>% 
-    group_by(subject,activity) %>% 
-    summarise_all(mean)
   
   ## go back parent directory
-  write.csv(mergedData, "mergedData.csv")
-  write.csv(mergedDataAvg, "mergedDataAvg.csv")
   setwd("../")
+  
+  ##return the merged dataset
+  mergedData
   
 }
 
